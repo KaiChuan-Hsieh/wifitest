@@ -23,3 +23,7 @@ endif
 ifneq (,$(filter FE375CG ME572C ME572CL TF103CG FE170CG ME181C K013 K011,$(TARGET_PROJECT)))
     include $(LOCAL_PATH)/bcm43362/Android.mk
 endif
+
+ifneq (,$(filter zenbo,$(TARGET_PRODUCT)))
+    include $(LOCAL_PATH)/bcm4339/Android.mk
+endif

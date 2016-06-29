@@ -42,6 +42,7 @@
 #include <typedefs.h>
 #include "wlu_remote.h"
 #include <miniopt.h>
+#include <strings.h>
 #if defined(RWL_DONGLE) || defined(RWL_SERIAL)
 #define READ_DELAY 			500000
 #define BAUD_RATE_115200	115200

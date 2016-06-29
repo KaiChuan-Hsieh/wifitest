@@ -76,9 +76,7 @@
 #include "wlu.h"
 #include <bcmcdc.h>
 #if defined(WLPFN) && defined(linux)
-#ifndef TARGETENV_android
 #include <unistd.h>
-#endif
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -124,6 +122,8 @@
 #include <bcm_mpool_pub.h>
 #include <proto/bcmipv6.h>
 #include <wlc_ppr.h>
+
+#include <strings.h>
 
 /* For backwards compatibility, the absense of the define 'NO_FILESYSTEM_SUPPORT'
  * implies that a filesystem is supported.

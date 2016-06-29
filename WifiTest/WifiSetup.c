@@ -58,6 +58,7 @@ const struct model_chip_struct asus_model_chip_map[] = {
 	{ "AST21", BCM4339 }, { "K015", BCM4339 },		// ME581CL
 	{ "K01H", BCM4339 }, { "P025", BCM4339 },		// ME581C & Z581C & SANTA
 	{ "TOBY", BCM4339 },					// TOBY
+	{ "zenbo", BCM4339 },					// ZENBO
 	{ "KIWI", BCM4354 },					// TV500I
 	{ "K01B", WCN3660 }, 					// TF303K
 	{ "P002", WCN3610 },					// Z370KL
@@ -85,12 +86,14 @@ int getchipid(char *model)
 int main( int argc, char **argv )
 {
 	int chip_spec = 0;
-	char project_id[PROPERTY_VALUE_MAX];
+	char product_model[PROPERTY_VALUE_MAX];
+	char product_name[PROPERTY_VALUE_MAX];
 	char country[PROPERTY_VALUE_MAX];
-	property_get("ro.product.model", project_id, "");
+	property_get("ro.product.model", product_model, "");
+	property_get("ro.product.name", product_name, "");
 	property_get("ro.config.versatility", country, "WW");
 
-	switch (getchipid(project_id)) {
+	switch (getchipid(product_model)) {
 	case BCM43362:
 		printf("%d\n",BGNSISO);
 		break;
@@ -138,7 +141,19 @@ int main( int argc, char **argv )
 		}
 		break;
 	default:
-		printf("%d\n",NOWIFI);
+		switch (getchipid(product_name)) {
+		case BCM4339:
+			if (strcmp(country, "ID") == 0) {
+				printf("%d\n",IDACSISO);
+				break;
+			} else {
+				printf("%d\n",ACSISO);
+				break;
+			}
+		default:
+			printf("%d\n",NOWIFI);
+			break;
+		}
 		break;
 	}
 	return 0;

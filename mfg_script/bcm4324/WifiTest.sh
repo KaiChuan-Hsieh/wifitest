@@ -293,31 +293,55 @@ function start_stop_tx {
 found="False"
 
 case $1 in
+1)	android_ver=$(getprop ro.build.version.release)
+	main_ver=${android_ver:0:1}
+	if [ $main_ver -lt 6 ]; then
+		echo "use netcfg"
+		use_ifconfig=0
+	else
+		echo "use ifconfig"
+		use_ifconfig=1
+	fi
 
-1)	case $2 in
-	1)	service call wifi 13 i32 0 > /dev/null
+	case $2 in
+	1)	svc wifi disable
+		sleep 1
 		echo "/system/vendor/firmware/bcm4324/fw_bcmdhd_mfg.bin" > /sys/module/bcmdhd/parameters/firmware_path
 		begin=$(date +%s)
 		while true
 		do
-		netcfg wlan0 up
-		result=$(netcfg)
-		for var in $result
-		do
-		if [ $var = "wlan0" ]; then
-			found="True"
-			continue
-		fi
-		if [ $found = "True" ]; then
-		if [  $var = "UP" ]; then
-			echo "PASS"
-			return
+		if [ $use_ifconfig -eq 1 ]; then
+			ifconfig wlan0 up
+			result=$(ifconfig)
+			for var in $result
+			do
+			if [ $var = "wlan0" ]; then
+				echo "PASS"
+				return
+			else
+				break
+			fi
+			done
 		else
-			found="False"
-			break
+			netcfg wlan0 up
+			result=$(netcfg)
+			for var in $result
+			do
+			if [ $var = "wlan0" ]; then
+				found="True"
+				continue
+			fi
+			if [ $found = "True" ]; then
+				if [  $var = "UP" ]; then
+					echo "PASS"
+					return
+				else
+					found="False"
+					break
+				fi
+			fi
+			done
 		fi
-		fi
-		done
 		sleep 1
 		now=$(date +%s)
 		diff=$(($now - $begin))
@@ -329,28 +353,42 @@ case $1 in
 		fi
 		done
 		;;
-	0)	service call wifi 13 i32 0 > /dev/null
+	0)	svc wifi disable
 		begin=$(date +%s)
 		while true
 		do
-		netcfg wlan0 down
-		result=$(netcfg)
-		for var in $result
-		do
-		if [ $var = "wlan0" ]; then
-			found="True"
-			continue
-		fi
-		if [ $found = "True" ]; then
-		if [ $var = "DOWN" ]; then
-			echo "PASS"
-			return
+		if [ $use_ifconfig -eq 1 ]; then
+			ifconfig wlan0 down
+			result=$(ifconfig)
+			for var in $result
+			do
+			if [ $var = "wlan0" ]; then
+				break
+			else
+				echo "PASS"
+				return
+			fi
+			done
 		else
-			found="False"
-			break
+			netcfg wlan0 down
+			result=$(netcfg)
+			for var in $result
+			do
+			if [ $var = "wlan0" ]; then
+				found="True"
+				continue
+			fi
+			if [ $found = "True" ]; then
+				if [ $var = "DOWN" ]; then
+					echo "PASS"
+					return
+				else
+					found="False"
+					break
+				fi
+			fi
+			done
 		fi
-		fi
-		done
 		sleep 1
 		now=$(date +%s)
 		diff=$(($now - $begin))

@@ -39,3 +39,7 @@ endif
 ifneq (,$(filter full_asus8173_tb_a8s_l1 full_asus8176_tb_a8_m P026,$(TARGET_PRODUCT)))
     include $(LOCAL_PATH)/mt6630/Android.mk
 endif
+
+ifneq (,$(filter zenbo,$(TARGET_PRODUCT)))
+    include $(LOCAL_PATH)/bcm4339/Android.mk
+endif

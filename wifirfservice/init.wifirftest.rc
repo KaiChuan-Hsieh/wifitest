@@ -3,6 +3,7 @@ symlink /system/bin/WifiTest /data/data/WifiTest
 symlink /system/bin/WiFiMaxPower /data/data/WiFiMaxPower
 
 service wifirftestd /system/bin/wifirftestd
+    seclabel u:r:wifitest:s0
     class main
     user root
     group root system
